@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: kInitialRoute,
       routes: kRoutes,
+      debugShowCheckedModeBanner: false,
     );
   }
 }
