@@ -1,0 +1,2 @@
+C:/Users/user/Desktop/Practica/couteau-app/android/app/.cxx/RelWithDebInfo/1u44e336/x86/CMakeFiles/edit_cache.dir
+C:/Users/user/Desktop/Practica/couteau-app/android/app/.cxx/RelWithDebInfo/1u44e336/x86/CMakeFiles/rebuild_cache.dir

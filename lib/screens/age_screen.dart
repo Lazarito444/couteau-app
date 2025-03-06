@@ -93,13 +93,17 @@ class _AgeScreenState extends State<AgeScreen> {
     }
 
     late String imageUrl;
+    late String ageStatus;
     if (responseData["age"] < 18) {
+      ageStatus = "Joven";
       imageUrl =
           "https://static.vecteezy.com/system/resources/previews/017/038/752/non_2x/cartoon-little-boy-happy-smiling-standing-free-vector.jpg";
     } else if (responseData["age"] < 50) {
+      ageStatus = "Adulto";
       imageUrl =
           "https://w7.pngwing.com/pngs/707/721/png-transparent-guy-boy-smart-man-people-male-person-young-adult-smile-thumbnail.png";
     } else {
+      ageStatus = "Anciano";
       imageUrl =
           "https://aprende.guatemala.com/wp-content/uploads/2022/11/Dia-del-Adulto-Mayor-en-Guatemala-3.jpg";
     }
@@ -128,6 +132,17 @@ class _AgeScreenState extends State<AgeScreen> {
               fontSize: 32,
               fontWeight: FontWeight.bold,
               color: Colors.orange.shade400,
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            ageStatus,
+            style: GoogleFonts.gabarito(
+              fontSize: 24,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
             ),
           ),
           SizedBox(
