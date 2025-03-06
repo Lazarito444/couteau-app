@@ -154,6 +154,7 @@ class _CountryCollegesState extends State<CountryCollegesScreen> {
                   width: 30,
                   child: CircularProgressIndicator(),
                 ),
+              // ignore: unnecessary_null_comparison
               if (_data != null || _data.isNotEmpty)
                 SizedBox(width: double.infinity, height: 430, child: content)
             ],

@@ -8,28 +8,29 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
-class AgeScreen extends StatefulWidget {
-  const AgeScreen({super.key});
+class PokemonScreen extends StatefulWidget {
+  const PokemonScreen({super.key});
 
   @override
-  State<AgeScreen> createState() => _AgeScreenState();
+  State<PokemonScreen> createState() => _PokemonScreenState();
 }
 
-class _AgeScreenState extends State<AgeScreen> {
+class _PokemonScreenState extends State<PokemonScreen> {
   final TextEditingController _controller = TextEditingController();
   bool _isLoading = false;
   Map<String, dynamic>? _data;
   Widget? content;
 
   Future<void> _onSubmit() async {
-    final String typedName = _controller.text;
+    String typedName = _controller.text.trim().toLowerCase();
 
     if (typedName.isEmpty) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text("Nombre requerido"),
-          content: Text("Por favor, ingrese un nombre."),
+          title: Text("Pokémon requerido"),
+          content: Text(
+              "Por favor, ingrese el nombre de un Pokémon para mostrar sus datos."),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -45,25 +46,44 @@ class _AgeScreenState extends State<AgeScreen> {
       _isLoading = true;
     });
 
-    final Uri uri = Uri.https("api.agify.io", "/", {"name": typedName});
+    final Uri uri = Uri.parse("https://pokeapi.co/api/v2/pokemon/$typedName");
     http.Response response = await http.get(uri);
+
+    typedName = typedName[0].toUpperCase() + typedName.substring(1);
 
     if (response.statusCode >= 400) {
       if (!context.mounted) return;
 
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text("Error"),
-          content: Text("Ocurrió un error, por favor, intenta más tarde."),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text("Entendido"),
-            )
-          ],
-        ),
-      );
+      if (response.statusCode == 404) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text("Pokémon no encontrado"),
+            content: Text(
+                "No pudimos encontrar a este Pokémon, asegúrate que esté bien escrito."),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text("Entendido"),
+              )
+            ],
+          ),
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text("Error"),
+            content: Text("Ocurrió un error, por favor, intenta más tarde."),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text("Entendido"),
+              )
+            ],
+          ),
+        );
+      }
       setState(() {
         _isLoading = false;
       });
@@ -72,36 +92,13 @@ class _AgeScreenState extends State<AgeScreen> {
 
     final Map<String, dynamic> responseData = json.decode(response.body);
 
-    if (responseData["age"] == null) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text("Nombre raro"),
-          content: Text("No podemos predecir la edad de este nombre"),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text("Entendido"),
-            )
-          ],
-        ),
-      );
-      setState(() {
-        _isLoading = false;
-      });
-      return;
-    }
+    late String imageUrl =
+        responseData["sprites"]["other"]["official-artwork"]["front_default"];
+    String habilidades = "Habilidad(es)";
 
-    late String imageUrl;
-    if (responseData["age"] < 18) {
-      imageUrl =
-          "https://static.vecteezy.com/system/resources/previews/017/038/752/non_2x/cartoon-little-boy-happy-smiling-standing-free-vector.jpg";
-    } else if (responseData["age"] < 50) {
-      imageUrl =
-          "https://w7.pngwing.com/pngs/707/721/png-transparent-guy-boy-smart-man-people-male-person-young-adult-smile-thumbnail.png";
-    } else {
-      imageUrl =
-          "https://aprende.guatemala.com/wp-content/uploads/2022/11/Dia-del-Adulto-Mayor-en-Guatemala-3.jpg";
+    for (int i = 0; i < responseData["abilities"].length; i++) {
+      String habilidad = responseData["abilities"][i]["ability"]["name"];
+      habilidades += "\n$habilidad";
     }
 
     setState(() {
@@ -112,7 +109,18 @@ class _AgeScreenState extends State<AgeScreen> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text(
-            _data!["name"] as String,
+            typedName,
+            style: GoogleFonts.gabarito(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: Colors.orange.shade800,
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Text(
+            "Experiencia base: ${_data!["base_experience"].toString()}",
             style: GoogleFonts.gabarito(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -120,14 +128,15 @@ class _AgeScreenState extends State<AgeScreen> {
             ),
           ),
           SizedBox(
-            height: 5,
+            height: 10,
           ),
           Text(
-            _data!["age"].toString(),
+            habilidades,
+            textAlign: TextAlign.center,
             style: GoogleFonts.gabarito(
-              fontSize: 32,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Colors.orange.shade400,
+              color: Colors.black,
             ),
           ),
           SizedBox(
@@ -146,7 +155,7 @@ class _AgeScreenState extends State<AgeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: TopBar(
-        title: "Predicción de Edad",
+        title: "Información de Pokémon",
       ),
       drawer: Sidebar(),
       body: Center(
@@ -160,7 +169,7 @@ class _AgeScreenState extends State<AgeScreen> {
               TextField(
                 controller: _controller,
                 decoration: InputDecoration(
-                  labelText: "Nombre",
+                  labelText: "Nombre del Pokémon",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -180,7 +189,7 @@ class _AgeScreenState extends State<AgeScreen> {
                   ),
                 ),
                 child: Text(
-                  "Predecir Edad",
+                  "Mostrar Información",
                   style: TextStyle(
                     fontSize: 16,
                   ),

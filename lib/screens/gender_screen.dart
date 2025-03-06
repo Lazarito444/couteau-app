@@ -64,6 +64,9 @@ class _GenderScreenState extends State<GenderScreen> {
           ],
         ),
       );
+      setState(() {
+        _isLoading = false;
+      });
       return;
     }
 

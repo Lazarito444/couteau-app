@@ -5,7 +5,6 @@ import 'package:couteau/widgets/topbar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:location/location.dart';
 
 class WeatherScreen extends StatefulWidget {
   const WeatherScreen({super.key});
@@ -15,52 +14,15 @@ class WeatherScreen extends StatefulWidget {
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
-  final Location _location = Location();
-  double? _latitude;
-  double? _longitude;
+  final double _latitude = 18.475838171727702;
+  final double _longitude = -69.89867218902359;
   String? _weatherDescription;
   double? _temperature;
   bool _loading = true;
   String _errorMessage = '';
 
   Future<void> _getLocation() async {
-    bool serviceEnabled;
-    PermissionStatus permissionGranted;
-
-    serviceEnabled = await _location.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await _location.requestService();
-      if (!serviceEnabled) {
-        setState(() {
-          _loading = false;
-          _errorMessage = 'No se pudo habilitar el servicio de ubicación';
-        });
-        return;
-      }
-    }
-
-    permissionGranted = await _location.hasPermission();
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await _location.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) {
-        setState(() {
-          _loading = false;
-          _errorMessage = 'No se tiene permiso para acceder a la ubicación';
-        });
-        return;
-      }
-    }
-
-    LocationData locationData = await _location.getLocation();
-
-    setState(() {
-      _latitude = locationData.latitude;
-      _longitude = locationData.longitude;
-    });
-
-    if (_latitude != null && _longitude != null) {
-      await _getWeather(18.475838171727702, -69.89867218902359);
-    }
+    await _getWeather(18.475838171727702, -69.89867218902359);
   }
 
   Future<void> _getWeather(double latitude, double longitude) async {
@@ -122,7 +84,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                               height: 16,
                             ),
                             Text(
-                              'Latitud: ${_latitude ?? 'No disponible'}',
+                              'Latitud: $_latitude',
                               style: GoogleFonts.gabarito(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w600,
@@ -130,7 +92,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                             ),
                             SizedBox(height: 8),
                             Text(
-                              'Longitud: ${_longitude ?? 'No disponible'}',
+                              'Longitud: $_longitude',
                               style: GoogleFonts.gabarito(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w600,
