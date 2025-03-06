@@ -5,6 +5,7 @@ import 'package:couteau/screens/front_screen.dart';
 import 'package:couteau/screens/gender_screen.dart';
 import 'package:couteau/screens/pokemon_screen.dart';
 import 'package:couteau/screens/weather_screen.dart';
+import 'package:couteau/screens/wordpress_news_screen.dart';
 import 'package:flutter/material.dart';
 
 const String kInitialRoute = "/";
@@ -16,6 +17,6 @@ final Map<String, Widget Function(BuildContext ctx)> kRoutes = {
   "/country-colleges": (ctx) => CountryCollegesScreen(),
   "/dr-weather": (ctx) => WeatherScreen(),
   "/pokemon-info": (ctx) => PokemonScreen(),
-  "/wordpress-news": (ctx) => Scaffold(),
+  "/wordpress-news": (ctx) => WordpressNewsScreen(),
   "/about": (ctx) => AboutScreen(),
 };
